@@ -15,7 +15,7 @@ A Model Context Protocol (MCP) server that enables Claude Desktop to interact wi
 No installation required! Simply run with NPX:
 
 ```bash
-npx akhilpal-gmail-mcp-server
+npx gmail-mcp-cli
 ```
 
 ## Setup
@@ -32,7 +32,7 @@ Add the Gmail MCP server to your Claude Desktop configuration:
   "mcpServers": {
     "gmail": {
       "command": "npx",
-      "args": ["akhilpal-gmail-mcp-server"]
+      "args": ["gmail-mcp-cli"]
     }
   }
 }
