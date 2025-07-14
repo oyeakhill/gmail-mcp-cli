@@ -24,7 +24,7 @@ npx gmail-mcp-cli
 
 Add the Gmail MCP server to your Claude Desktop configuration:
 
-**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+**Windows**: `%APPDATA%\Roaming\Claude\claude_desktop_config.json`
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
 ```json
