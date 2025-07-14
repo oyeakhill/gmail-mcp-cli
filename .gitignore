@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Configuration files with sensitive data
+.gmail-mcp.json
+*.json
+
+# Build outputs
+dist/
+build/
+*.tgz
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+*.test.js
+*.spec.js
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Private directories
+server/
+src/
+templates/
+
+# Debug files
+debug-*.ps1
+debug-*.sh
+
+# Output files
+repomix-output.xml
+testinggmailmcp.txt
