@@ -13,11 +13,13 @@ yarn-error.log*
 
 # Configuration files with sensitive data
 .gmail-mcp.json
-*.json
+token.json
+credentials.json
+claude_desktop_config.json
 
 # Build outputs
-dist/
-build/
+/dist/
+/build/
 *.tgz
 
 # IDE files
@@ -41,11 +43,6 @@ coverage/
 *.temp
 *.log
 
-# Private directories
-server/
-src/
-templates/
-
 # Debug files
 debug-*.ps1
 debug-*.sh
@@ -53,3 +50,10 @@ debug-*.sh
 # Output files
 repomix-output.xml
 testinggmailmcp.txt
+
+# Local server copy (created during init)
+/server/
+
+# Keep templates and src for npm package
+!templates/
+!src/

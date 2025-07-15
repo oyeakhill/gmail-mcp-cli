@@ -1,0 +1,70 @@
+{
+  "name": "gmail-mcp-cli",
+  "version": "3.0.10",
+  "description": "Deploy Gmail MCP Server easily - 17 AI-powered email tools for Claude Desktop",
+  "main": "dist/cli.js",
+  "bin": {
+    "gmail-mcp": "./dist/cli.js"
+  },
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "dev": "tsx src/cli.ts",
+    "test": "echo \"No tests specified\" && exit 0",
+    "postinstall": "node -e \"console.log('\\n📧 Gmail MCP Server CLI installed!\\n\\nNext: Run \\\\033[36mgmail-mcp init\\\\033[0m to set up your server\\n')\""
+  },
+  "keywords": [
+    "gmail",
+    "mcp",
+    "claude",
+    "email",
+    "ai",
+    "productivity",
+    "cli",
+    "deployment",
+    "model-context-protocol",
+    "anthropic",
+    "subscription-management",
+    "email-automation"
+  ],
+  "author": "Akhil",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akhilpal0/gmail-mcp-cli.git"
+  },
+  "homepage": "https://github.com/akhilpal0/gmail-mcp-cli",
+  "dependencies": {
+    "@types/express": "^4.17.21",
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.8",
+    "@types/node": "^24.0.13",
+    "axios": "^1.7.2",
+    "boxen": "^8.0.1",
+    "chalk": "^5.4.1",
+    "commander": "^14.0.0",
+    "express": "^4.19.2",
+    "fs-extra": "^11.3.0",
+    "inquirer": "^12.7.0",
+    "open": "^10.1.0",
+    "ora": "^8.2.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "src/**/*",
+    "server/**/*",
+    "templates/**/*",
+    "README.md",
+    "LICENSE",
+    "PRIVACY.md",
+    "TERMS.md"
+  ]
+}
