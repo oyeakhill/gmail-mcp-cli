@@ -10,12 +10,28 @@ A Model Context Protocol (MCP) server that enables Claude Desktop to interact wi
 - 🔍 Advanced email search capabilities
 - 🤖 AI-powered email analysis (optional)
 
-## Installation
+## Installation & Usage
 
-No installation required! Simply run with NPX:
-
+### Method 1: NPX (Recommended)
 ```bash
-npx gmail-mcp-cli
+# Run the CLI directly
+npx gmail-mcp-cli@latest
+
+# Initialize Gmail MCP Server
+gmail-mcp init
+
+# Deploy to Claude Desktop
+gmail-mcp deploy
+```
+
+### Method 2: Global Installation
+```bash
+# Install globally
+npm install -g gmail-mcp-cli
+
+# Use commands directly
+gmail-mcp-cli init
+gmail-mcp-cli deploy
 ```
 
 ## Setup
@@ -61,6 +77,33 @@ Once configured, you can use these tools in Claude Desktop:
 - OAuth tokens are stored securely in your local configuration
 - No email data is sent to external servers
 - Optional AI features use OpenAI API (configurable)
+
+## Troubleshooting
+
+### "Command not found" Error
+If you get `'gmail-mcp' is not recognized as an internal or external command`:
+
+1. **After using NPX**: Use `gmail-mcp` (not `gmail-mcp-cli`)
+   ```bash
+   npx gmail-mcp-cli@latest  # Install package
+   gmail-mcp init           # Use this command
+   ```
+
+2. **Global installation**: Use full command name
+   ```bash
+   npm install -g gmail-mcp-cli
+   gmail-mcp-cli init      # Use this command
+   ```
+
+### "Nothing happens" when running init
+- Make sure you're using Node.js 18+
+- Try global installation if NPX fails
+- Check your internet connection for OAuth setup
+
+### Gmail Authentication Issues
+- The CLI uses shared OAuth for quick setup
+- Follow the browser prompts carefully
+- Restart Claude Desktop after deployment
 
 ## Support
 
