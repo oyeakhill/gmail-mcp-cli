@@ -1,21 +1,14 @@
-#!/usr/bin/env node
-
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
+const { Server } = require('@modelcontextprotocol/sdk/server/index.js');
+const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
+const {
   CallToolRequestSchema,
   ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
-import { google } from 'googleapis';
-import { OAuth2Client } from 'google-auth-library';
-import { authenticate } from '@google-cloud/local-auth';
-import * as fs from 'fs/promises';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+} = require('@modelcontextprotocol/sdk/types.js');
+const { google } = require('googleapis');
+const { OAuth2Client } = require('google-auth-library');
+const { authenticate } = require('@google-cloud/local-auth');
+const fs = require('fs').promises;
+const path = require('path');
 
 // Gmail auth paths
 const GMAIL_TOKEN_PATH = path.join(__dirname, '..', 'token.json');
@@ -98,7 +91,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       return {
         content: [{
           type: 'text',
-          text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+          text: `Error: ${error.message || 'Unknown error'}`
         }]
       };
     }
