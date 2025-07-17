@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
@@ -7,10 +9,8 @@ import {
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 import { authenticate } from '@google-cloud/local-auth';
-import OpenAI from 'openai';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { z } from 'zod';
 import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -21,15 +21,7 @@ const __dirname = dirname(__filename);
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
-// Initialize OpenAI (with fallback)
-let openai: OpenAI | null = null;
-if (process.env.OPENAI_API_KEY) {
-  openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-}
-
-// Gmail auth setup with full Gmail access
+// Gmail auth setup
 const GMAIL_SCOPES = [
   'https://www.googleapis.com/auth/gmail.readonly',
   'https://www.googleapis.com/auth/gmail.modify',
@@ -88,16 +80,6 @@ async function getGmailService() {
   return google.gmail({ version: 'v1', auth });
 }
 
-// Define types for tool arguments
-interface GetEmailsArgs {
-  count?: number;
-  category?: string;
-}
-
-interface AnalyzeEmailsArgs {
-  count?: number;
-}
-
 // Create server
 const server = new Server(
   {
@@ -111,35 +93,48 @@ const server = new Server(
   }
 );
 
-// Add basic Gmail tools
+// List tools handler
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
         name: 'get_emails',
         description: 'Get Gmail emails with filtering',
-        inputSchema: { 
-          type: 'object', 
-          properties: { 
-            count: { type: 'number', default: 10 },
-            category: { type: 'string', default: 'primary' }
-          } 
+        inputSchema: {
+          type: 'object',
+          properties: {
+            count: {
+              type: 'number',
+              description: 'Number of emails to retrieve',
+              default: 10
+            },
+            category: {
+              type: 'string',
+              description: 'Gmail category to filter by',
+              default: 'primary'
+            }
+          }
         }
       },
       {
         name: 'analyze_emails',
         description: 'AI-powered email analysis',
-        inputSchema: { 
-          type: 'object', 
-          properties: { 
-            count: { type: 'number', default: 5 }
-          } 
+        inputSchema: {
+          type: 'object',
+          properties: {
+            count: {
+              type: 'number',
+              description: 'Number of emails to analyze',
+              default: 5
+            }
+          }
         }
       }
     ]
   };
 });
 
+// Call tool handler
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
   
@@ -147,38 +142,37 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       case 'get_emails': {
         const gmail = await getGmailService();
-        const emailArgs = args as GetEmailsArgs;
+        const count = (args as any)?.count || 10;
+        const category = (args as any)?.category || 'primary';
         
-        const listParams = {
+        const response = await gmail.users.messages.list({
           userId: 'me',
-          maxResults: emailArgs?.count || 10,
-          q: `category:${emailArgs?.category || 'primary'}`
-        };
-        
-        const response = await gmail.users.messages.list(listParams);
+          maxResults: count,
+          q: `category:${category}`
+        });
         
         return {
           content: [
             {
               type: 'text',
-              text: `Found ${response.data.messages?.length || 0} emails in ${emailArgs?.category || 'primary'} category`
+              text: `Found ${response.data.messages?.length || 0} emails in ${category} category`
             }
           ]
         };
       }
-        
+      
       case 'analyze_emails': {
-        const analysisArgs = args as AnalyzeEmailsArgs;
+        const count = (args as any)?.count || 5;
         return {
           content: [
             {
               type: 'text',
-              text: `Email analysis for ${analysisArgs?.count || 5} emails - OpenAI integration available with API key`
+              text: `Email analysis for ${count} emails - Gmail MCP Server v3.0.0 ready!`
             }
           ]
         };
       }
-        
+      
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
@@ -190,7 +184,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           type: 'text',
           text: `Error: ${errorMessage}`
         }
-      ]
+      ],
+      isError: true
     };
   }
 });
@@ -198,11 +193,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error('🚀 Gmail MCP Server started');
+  console.error('🚀 Gmail MCP Server v3.0.0 started successfully');
 }
 
 main().catch((error: unknown) => {
   const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-  console.error('Fatal error:', errorMessage);
+  console.error('❌ Fatal error:', errorMessage);
   process.exit(1);
 });
