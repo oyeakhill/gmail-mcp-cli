@@ -18,10 +18,10 @@ import open from 'open';
 import { OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
 
-// 🔑 SHARED OAUTH CONFIGURATION (Replace with your production credentials)
+// 🔑 SHARED OAUTH CONFIGURATION
 const SHARED_OAUTH_CONFIG = {
-  client_id: '214465171457-augp8ngenjjlu7u7nnv3naiu5fksavam.apps.googleusercontent.com',
-  client_secret: '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',
+  client_id: process.env.GMAIL_CLIENT_ID || '214465171457-augp8ngenjjlu7u7nnv3naiu5fksavam.apps.googleusercontent.com',
+  client_secret: process.env.GMAIL_CLIENT_SECRET || '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',
   redirect_uri: 'http://localhost:3000/auth/callback'
 };
 
