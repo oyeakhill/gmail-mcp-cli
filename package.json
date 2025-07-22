@@ -1,6 +1,6 @@
 {
   "name": "gmail-mcp-cli",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "Deploy Gmail MCP Server with 17 AI-powered email tools for Claude Desktop",
   "main": "dist/cli.js",
   "bin": {
