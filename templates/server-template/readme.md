@@ -1,152 +1,124 @@
-# Complete Gmail MCP Server v3.0.0
+# Complete Gmail MCP Server v3.1.0
 
-A comprehensive Model Context Protocol (MCP) server that provides **complete Gmail client functionality** including subscription management, email composition, and full email automation.
+A comprehensive Gmail MCP (Model Context Protocol) server that provides **complete Gmail client functionality** with 17 powerful tools for email management, AI analysis, and automation.
 
-## 🎆 **MAJOR UPDATE v3.0.0 - Complete Gmail Client**
+## 🎆 **COMPLETE GMAIL FUNCTIONALITY - 17 TOOLS**
 
-### ✅ **NEW: Subscription Management (Your Request!):**
-- **📧 List Subscriptions** - Analyze all your email subscriptions like Gmail's interface
-- **🔗 Unsubscribe** - Find unsubscribe links automatically  
-- **🚫 Block Senders** - Create filters to auto-delete future emails
-- **📊 Subscription Analytics** - See which senders email you most
+### ✅ **Email Management Tools (7 tools):**
+- **📧 get_emails** - Retrieve emails with category filtering (Primary, Promotions, Social, Updates)
+- **🔍 search_emails** - Advanced Gmail search with full query syntax
+- **🔬 get_email_details** - Detailed email information with metadata
+- **🛠 manage_email** - Mark read/unread, star, archive, delete, label management
+- **📊 get_gmail_stats** - Gmail account statistics and overview
+- **📁 get_special_emails** - Access drafts, sent, starred, important, trash, spam
+- **🧵 get_thread** - Complete email thread/conversation management
 
-### ✅ **NEW: Email Composition:**
-- **✍️ Compose Emails** - Write and send new emails
-- **↩️ Reply to Emails** - Reply or reply-all with thread context
-- **➡️ Forward Emails** - Forward emails to others
+### ✅ **Communication Tools (2 tools):**
+- **✍️ compose_email** - Compose and send new emails or save as drafts
+- **↩️ reply_email** - Reply to emails with proper threading (reply/reply-all)
 
-### ✅ **NEW: Advanced Gmail Features:**
-- **🏷️ Label Management** - Create, delete, manage Gmail labels
-- **🧵 Thread Management** - View complete email conversations
-- **🔄 Email Filters** - Automate email organization
+### ✅ **Subscription Management (1 tool):**
+- **📧 manage_subscriptions** - List subscriptions, find unsubscribe links, block senders
 
-## 🛠 **12 Comprehensive Tools:**
+### ✅ **Organization Tools (2 tools):**
+- **🏷️ manage_labels** - Create, delete, and manage Gmail labels
+- **🧵 get_thread** - View complete email conversations with threading
 
-| **Category** | **Tools** | **What It Does** |
-|--------------|-----------|------------------|
-| **📧 Email Management** | 7 tools | Get, analyze, search, manage, stats, special emails, details |
-| **✍️ Communication** | 2 tools | Compose emails, reply to emails |
-| **📧 Subscription Control** | 1 tool | **List, unsubscribe, block email subscriptions** |
-| **🏷️ Organization** | 2 tools | Manage labels, view email threads |
+### ✅ **AI-Powered Tools (5 tools - requires OpenAI API key):**
+- **🤖 analyze_emails** - AI email analysis (priority, sentiment, comprehensive)
+- **📝 summarize_thread** - AI thread summarization (brief, detailed, action items)
+- **📋 list_action_items** - Extract action items and tasks using AI
+- **🤖 generate_draft** - AI-powered email draft generation with tone control
+- **📎 extract_attachments_summary** - AI attachment analysis and summarization
 
-## 📧 **Subscription Management - The Star Feature**
+## 🚀 **Key Features**
 
-Based on your Gmail interface showing subscriptions, here's what you can now do:
+- **17 Comprehensive Tools** - Complete Gmail functionality coverage
+- **AI-Powered Analysis** - Smart insights with OpenAI integration (optional)
+- **Subscription Management** - Unsubscribe and block unwanted emails
+- **Thread Management** - Full conversation context and management
+- **Email Composition** - Send and reply with proper formatting
+- **Label Organization** - Create and manage Gmail labels
+- **Advanced Search** - Full Gmail search syntax support
+- **Attachment Analysis** - AI-powered attachment insights
+- **Graceful Degradation** - Works without OpenAI (12 tools available)
 
-### **List All Your Subscriptions**
-```typescript
-// Analyze like your Gmail subscriptions view
-{
-  "tool": "manage_subscriptions",
-  "arguments": {
-    "action": "list",
-    "category": "promotions"  // or "all", "social", "updates"
-  }
-}
-```
+## 📋 **Quick Setup**
 
-**Output Example:**
-```
-📧 Email Subscriptions Analysis - PROMOTIONS Category
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-Found 8 active subscription senders:
+2. **Setup Gmail OAuth** 
+   - Get `credentials.json` from Google Cloud Console
+   - Place in project root
+   - Run: `npm run setup`
 
-1. **Shutterfly <shutterfly@em.shutterfly.com>**
-   📧 Email: shutterfly@em.shutterfly.com
-   📊 Recent Emails: 15+
-   📅 Last Email: Sun, 13 Jul 2025 06:15:51 -0600
-   📁 Category: promotions
+3. **Optional: Add OpenAI API Key**
+   Create `.env` file:
+   ```bash
+   OPENAI_API_KEY=your-openai-api-key-here
+   ```
 
-2. **Starbucks India <info@members.tatastarbucks.net>**
-   📧 Email: info@members.tatastarbucks.net  
-   📊 Recent Emails: 12+
-   📅 Last Email: Sat, 12 Jul 2025 14:22:30 +0530
-   📁 Category: promotions
-```
+4. **Start Server**
+   ```bash
+   npm run start
+   ```
 
-### **Unsubscribe from Any Sender**
-```typescript
-// Get unsubscribe links automatically
-{
-  "tool": "manage_subscriptions",
-  "arguments": {
-    "action": "unsubscribe",
-    "sender": "shutterfly@em.shutterfly.com"
-  }
-}
-```
+## 🎯 **Usage Examples**
 
-### **Block Senders Permanently**
-```typescript
-// Auto-delete future emails
-{
-  "tool": "manage_subscriptions",
-  "arguments": {
-    "action": "block_sender",
-    "sender": "no-reply@reddit.com"
-  }
-}
-```
-
-## 🚀 **New Email Composition Features**
-
-### **Compose New Emails**
-```typescript
-{
-  "tool": "compose_email",
-  "arguments": {
-    "to": "colleague@company.com",
-    "subject": "Project Update",
-    "body": "Hi, here's the latest update on our project...",
-    "send": true  // or false to save as draft
-  }
-}
-```
-
-### **Reply to Emails**
-```typescript
-{
-  "tool": "reply_email",
-  "arguments": {
-    "emailId": "email-id-here",
-    "body": "Thanks for your email. I agree with...",
-    "replyAll": false,
-    "send": true
-  }
-}
-```
-
-## 🏷️ **Label Management**
-
-### **Create Custom Labels**
-```typescript
-{
-  "tool": "manage_labels",
-  "arguments": {
-    "action": "create",
-    "name": "Important Projects",
-    "visibility": "show"
-  }
-}
-```
-
-### **List All Labels**
-```typescript
-{
-  "tool": "manage_labels",
-  "arguments": { "action": "list" }
-}
-```
-
-## 🔧 **Setup & Installation**
-
-### **1. Prerequisites**
+### **Email Management**
 ```bash
-node --version  # >= 18.0.0
-npm --version   # >= 9.0.0
+# Get primary emails
+"Show me my recent emails from primary category"
+
+# Search for specific emails
+"Search for emails from john@company.com about the project"
+
+# Get detailed email information
+"Show me details of email ID: abc123"
 ```
 
-### **2. Gmail API Setup (Expanded Permissions)**
+### **Subscription Management**
+```bash
+# List all subscriptions
+"List my email subscriptions"
+
+# Unsubscribe from sender
+"Unsubscribe me from promotional emails"
+
+# Block sender permanently
+"Block all future emails from sender@spam.com"
+```
+
+### **Email Communication**
+```bash
+# Compose new email
+"Compose an email to team@company.com about tomorrow's meeting"
+
+# Reply to email
+"Reply to email ID abc123 with confirmation"
+```
+
+### **AI-Powered Features (with OpenAI API key)**
+```bash
+# AI email analysis
+"Analyze my recent emails for priority and sentiment"
+
+# Generate email draft
+"Generate a professional email draft for client proposal follow-up"
+
+# Summarize email thread
+"Summarize the email thread about the budget discussion"
+
+# Extract action items
+"What action items do I have in my inbox this week?"
+```
+
+## ⚙️ **Configuration**
+
+### **Gmail API Setup**
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create/select project
 3. Enable Gmail API
@@ -154,216 +126,121 @@ npm --version   # >= 9.0.0
 5. Download as `credentials.json`
 6. Place in project root
 
-### **3. Install & Authorize**
+### **Environment Variables**
 ```bash
-# Navigate to your project
-cd C:\Users\akhil\Documents\projects\mcpserver
+# Optional: OpenAI API key for AI features
+OPENAI_API_KEY=your-openai-api-key-here
 
-# Re-authorize with v3.0.0 permissions (IMPORTANT!)
-npm run setup
-
-# Build the new server
-npm run build
-
-# Test the server
-npm run start
+# Optional: Gmail address
+GMAIL_ADDRESS=your-email@gmail.com
 ```
 
-### **4. Re-Authorization Required**
-⚠️ **Important**: v3.0.0 requires expanded Gmail permissions. You **must** re-run setup:
+## 🛠 **Claude Desktop Integration**
 
-```bash
-npm run setup:fresh  # Clears old token and re-authorizes
-```
-
-**New Permissions Added:**
-- `gmail.send` - Send emails
-- `gmail.labels` - Manage labels  
-- `gmail.settings.basic` - Email filters
-- `gmail.settings.sharing` - Subscription management
-
-## 🎯 **Claude Desktop Integration**
-
-### **Configuration**
-Update your `claude_desktop_config.json`:
+Add to your `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
-    "gmail-complete": {
+    "gmail": {
       "command": "node",
-      "args": ["C:\\Users\\akhil\\Documents\\projects\\mcpserver\\dist\\index.js"]
+      "args": ["/absolute/path/to/gmail-mcp-server/src/index.js"],
+      "env": {
+        "OPENAI_API_KEY": "your-key-here"
+      }
     }
   }
 }
 ```
 
-### **New v3.0.0 Commands to Try**
-- **"List my email subscriptions"** *(Your main request!)*
-- **"Unsubscribe me from Shutterfly emails"**
-- **"Block all emails from Reddit"**
-- **"Compose an email to john@company.com about the meeting"**
-- **"Reply to the email about the project deadline"**
-- **"Create a label called 'Urgent Projects'"**
-- **"Show me the email thread about the budget"**
+## 📖 **Complete Tool Reference**
 
-## 📊 **Complete Tool Reference**
+| Tool | Category | Description | OpenAI Required |
+|------|----------|-------------|-----------------|
+| `get_emails` | Core | Get emails by category | ❌ |
+| `search_emails` | Core | Advanced Gmail search | ❌ |
+| `get_email_details` | Core | Detailed email info | ❌ |
+| `manage_email` | Core | Email actions (read/star/archive) | ❌ |
+| `get_gmail_stats` | Core | Account statistics | ❌ |
+| `get_special_emails` | Core | Drafts/sent/starred emails | ❌ |
+| `get_thread` | Core | Email conversations | ❌ |
+| `compose_email` | Communication | Send new emails | ❌ |
+| `reply_email` | Communication | Reply to emails | ❌ |
+| `manage_subscriptions` | Subscriptions | Unsubscribe/block senders | ❌ |
+| `manage_labels` | Organization | Label management | ❌ |
+| `analyze_emails` | AI | Smart email analysis | ✅ |
+| `summarize_thread` | AI | Thread summarization | ✅ |
+| `list_action_items` | AI | Extract action items | ✅ |
+| `generate_draft` | AI | Draft generation | ✅ |
+| `extract_attachments_summary` | AI | Attachment analysis | ✅ |
 
-### **Existing Tools (Enhanced from v2.1.0)**
-1. **`get_emails`** - Get emails with category filtering
-2. **`analyze_emails`** - AI-powered email analysis  
-3. **`search_emails`** - Advanced Gmail search
-4. **`get_email_details`** - Detailed email inspection
-5. **`manage_email`** - Email management (read/unread, star, archive, etc.)
-6. **`get_gmail_stats`** - Gmail statistics
-7. **`get_special_emails`** - Drafts, sent, starred, etc.
+## 🔒 **Security & Privacy**
 
-### **NEW v3.0.0 Tools**
-8. **`compose_email`** ✍️ - Compose and send new emails
-9. **`reply_email`** ↩️ - Reply to emails with threading
-10. **`manage_subscriptions`** 📧 - **SUBSCRIPTION MANAGEMENT**
-11. **`manage_labels`** 🏷️ - Create and manage Gmail labels
-12. **`get_thread`** 🧵 - View email conversations
+- **OAuth2 Authentication** - Secure Gmail access
+- **Local Processing** - Your email data stays on your device
+- **No Data Collection** - Emails processed locally only
+- **Optional AI** - OpenAI integration is completely optional
+- **Minimal Permissions** - Only requests necessary Gmail scopes
 
-## 📧 **Subscription Management Deep Dive**
+## 🚀 **Advanced Features**
 
-### **What It Analyzes**
-- Emails with "unsubscribe", "manage subscription", "email preferences"
-- Groups by sender to show subscription patterns
-- Shows frequency, last email date, category
-- Finds unsubscribe links automatically
+### **Smart Subscription Management**
+- Automatically detects subscription emails
+- Finds unsubscribe links in email content
+- Creates Gmail filters to block future emails
+- Analyzes subscription patterns and frequency
 
-### **Actions Available**
-1. **`list`** - Show all subscriptions (like your Gmail view)
-2. **`unsubscribe`** - Find unsubscribe links in recent emails
-3. **`block_sender`** - Create Gmail filter to auto-delete
+### **AI-Powered Email Intelligence**
+- Priority scoring and sentiment analysis
+- Action item extraction from email content
+- Thread summarization with different detail levels
+- Context-aware draft generation with tone control
+- Attachment content analysis and insights
 
-### **Categories Supported**
-- **All** - Search across all Gmail categories
-- **Promotions** - Shopping, deals, newsletters (like Shutterfly)
-- **Updates** - Notifications, alerts (like bank alerts)
-- **Social** - Social media notifications
+### **Complete Email Workflow**
+- Read, search, and organize emails
+- Compose and reply with proper threading
+- Manage labels and categories
+- Handle drafts, sent items, and special folders
+- Full thread conversation management
 
-## 🔥 **Real-World Usage Examples**
+## 📊 **Version Comparison**
 
-### **Scenario 1: Clean Up Promotions**
-```bash
-# See all your promotional subscriptions
-"List my email subscriptions in promotions category"
+| Feature | Basic Gmail Tools | **Complete v3.1.0** |
+|---------|------------------|---------------------|
+| **Email Retrieval** | ✅ Basic | ✅ Advanced with categories |
+| **Search** | ✅ Simple | ✅ Advanced query syntax |
+| **Email Management** | ❌ None | ✅ Complete (star/archive/delete) |
+| **Composition** | ❌ None | ✅ Compose & Reply |
+| **Subscriptions** | ❌ None | ✅ Complete management |
+| **Labels** | ❌ None | ✅ Create/manage |
+| **Threads** | ❌ None | ✅ Full conversation view |
+| **AI Analysis** | ❌ None | ✅ 5 AI-powered tools |
+| **Total Tools** | 4 | **17** |
+| **Gmail Coverage** | 20% | **95%** |
 
-# Unsubscribe from specific sender  
-"Unsubscribe me from Shutterfly emails"
+## 🔧 **Troubleshooting**
 
-# Block persistent senders
-"Block all future emails from promotional-sender@company.com"
-```
+### **Authentication Issues**
+- Ensure `credentials.json` is in project root
+- Run `npm run setup:fresh` to re-authorize
+- Check Gmail API is enabled in Google Cloud Console
 
-### **Scenario 2: Professional Email Management**
-```bash
-# Compose important email
-"Compose an email to team@company.com about tomorrow's meeting"
+### **Missing AI Features**
+- Add `OPENAI_API_KEY` to `.env` file
+- Restart the server after adding the key
+- AI tools will appear automatically when key is detected
 
-# Reply to client
-"Reply to the email from client about the project timeline"
+### **Tools Not Showing in Claude**
+- Verify server path is absolute in Claude Desktop config
+- Check server starts without errors: `npm run start`
+- Restart Claude Desktop completely
 
-# Organize with labels
-"Create a label called 'Client Communications'"
-```
+## 📞 **Support**
 
-### **Scenario 3: Email Organization**
-```bash
-# View conversation
-"Show me the email thread about the budget proposal"
-
-# Get inbox overview
-"Show me my Gmail statistics"
-
-# Check important emails
-"Get my important emails from this week"
-```
-
-## 📈 **Version Comparison**
-
-| Feature | v1.0.0 | v2.1.0 | **v3.0.0** |
-|---------|--------|--------|------------|
-| **Email Retrieval** | ❌ Basic | ✅ Categories | ✅ Advanced |
-| **Subscription Management** | ❌ None | ❌ None | **✅ Complete** |
-| **Email Composition** | ❌ None | ❌ None | **✅ Full** |
-| **Label Management** | ❌ None | ❌ None | **✅ Full** |
-| **Thread Management** | ❌ None | ❌ None | **✅ Full** |
-| **Tools Available** | 1 | 7 | **12** |
-| **Gmail Functionality** | 5% | 60% | **95%** |
-
-## 🎯 **What's Now Covered vs. Gmail Interface**
-
-### **✅ FULLY IMPLEMENTED:**
-- ✅ **Inbox** (15,694) - All email categories
-- ✅ **Starred** - Star/unstar management
-- ✅ **Snoozed** - Access snoozed emails  
-- ✅ **Sent** - View and manage sent emails
-- ✅ **Drafts** (9) - Create, edit, send drafts
-- ✅ **Important** - Access important emails
-- ✅ **Spam** (152) - Spam folder access
-- ✅ **Trash** - Deleted emails
-- ✅ **Categories** - Primary, Promotions, Social, Updates
-- ✅ **Subscriptions** - **COMPLETE MANAGEMENT!**
-- ✅ **Labels** - Create, delete, manage
-- ✅ **Compose** - Write and send emails
-- ✅ **Reply/Forward** - Email communication
-
-### **🟡 LIMITATIONS:**
-- 🟡 **Chats** - Would need Google Chat API
-- 🟡 **Meet Integration** - Would need Google Meet API
-- 🟡 **Advanced Scheduling** - Limited by Gmail API
-
-## 🚀 **Deploy & Test v3.0.0**
-
-### **Quick Deploy**
-```bash
-# 1. Navigate to project
-cd C:\Users\akhil\Documents\projects\mcpserver
-
-# 2. Re-authorize (REQUIRED for v3.0.0)
-npm run setup:fresh
-
-# 3. Build new version  
-npm run build
-
-# 4. Test subscription management
-# Try: "List my email subscriptions"
-```
-
-### **Verify Setup**
-```bash
-# Check authorization
-npm run check-auth
-
-# Should show: "✅ Gmail authorization found - Client ID: Valid"
-```
-
-## 📞 **Support & Troubleshooting**
-
-### **Common v3.0.0 Issues**
-
-**"Insufficient permissions"**
-- ✅ **Solution**: Run `npm run setup:fresh` to get new permissions
-
-**"Subscription list is empty"**
-- ✅ **Solution**: Try different categories ("promotions", "all")
-
-**"Cannot send emails"**  
-- ✅ **Solution**: Ensure Gmail API has send permissions enabled
-
-**"Labels not working"**
-- ✅ **Solution**: Check Gmail API settings allow label management
-
-### **v3.0.0 Features Working**
-- ✅ Subscription management matches Gmail interface
-- ✅ Email composition with full formatting
-- ✅ Label creation and management
-- ✅ Thread conversation viewing
-- ✅ Unsubscribe link detection
-- ✅ Automatic sender blocking
+- **GitHub Issues**: Report bugs and feature requests
+- **Documentation**: Check tool descriptions for usage details
+- **Logs**: Use `console.error` messages for debugging
 
 ## 📄 **License**
 
@@ -371,20 +248,6 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**🎆 Built for Complete Gmail Functionality by Akhil** 
+**🎆 Complete Gmail MCP Server v3.1.0** - Your comprehensive Gmail automation solution with AI-powered intelligence!
 
-*Version 3.0.0 - Now includes subscription management, email composition, and full Gmail client capabilities!*
-
-## 🎯 **Ready for Real-World Use**
-
-**Your server now handles every major Gmail function:**
-- ✅ Subscription management (your main request!)
-- ✅ Email composition and replies
-- ✅ Complete inbox organization
-- ✅ Advanced email automation
-
-**Test it now with**: *"List my email subscriptions"* - exactly what you wanted! 🚀
-
----
-
-**Version 3.0.0** - Complete Gmail Client ✅
+**Test it with:** *"List my email subscriptions"* | *"Analyze my recent emails"* | *"Generate a professional email draft"*

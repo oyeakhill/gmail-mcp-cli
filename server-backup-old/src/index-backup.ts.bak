@@ -47,8 +47,47 @@ const GMAIL_SCOPES = [
 const GMAIL_TOKEN_PATH = path.join(__dirname, '..', 'token.json');
 const GMAIL_CREDENTIALS_PATH = path.join(__dirname, '..', 'credentials.json');
 
+// Enhanced types for complete Gmail functionality
+interface EmailMetadata {
+  id: string;
+  threadId: string;
+  subject: string;
+  from: string;
+  to: string;
+  cc?: string;
+  bcc?: string;
+  date: string;
+  dateTimestamp: number;
+  body: string;
+  snippet: string;
+  isRead: boolean;
+  isImportant: boolean;
+  isStarred: boolean;
+  labels: string[];
+  category: string;
+  attachments: Array<{
+    filename: string;
+    mimeType: string;
+    size: number;
+    attachmentId?: string;
+  }>;
+  internalDate: string;
+  messageId: string;
+  inReplyTo?: string;
+  references?: string;
+}
+
+interface Subscription {
+  sender: string;
+  email: string;
+  frequency: string;
+  lastEmail: string;
+  totalEmails: number;
+  category: string;
+}
+
 // Gmail authentication functions
-async function loadSavedCredentialsIfExist() {
+async function loadSavedCredentialsIfExist(): Promise<OAuth2Client | null> {
   try {
     const content = await fs.readFile(GMAIL_TOKEN_PATH, 'utf-8');
     const credentials = JSON.parse(content);
@@ -61,7 +100,7 @@ async function loadSavedCredentialsIfExist() {
   }
 }
 
-async function saveCredentials(client) {
+async function saveCredentials(client: any): Promise<void> {
   const content = await fs.readFile(GMAIL_CREDENTIALS_PATH, 'utf-8');
   const keys = JSON.parse(content);
   const key = keys.installed || keys.web;
@@ -74,7 +113,7 @@ async function saveCredentials(client) {
   await fs.writeFile(GMAIL_TOKEN_PATH, payload);
 }
 
-async function authorizeGmail() {
+async function authorizeGmail(): Promise<any> {
   let client = await loadSavedCredentialsIfExist();
   if (client) {
     return client;
@@ -86,7 +125,7 @@ async function authorizeGmail() {
   });
   
   if (newClient.credentials) {
-    await saveCredentials(newClient);
+    await saveCredentials(newClient as any);
   }
   return newClient;
 }
@@ -97,7 +136,7 @@ async function getGmailService() {
 }
 
 // Enhanced email parsing utilities
-function extractEmailBody(payload) {
+function extractEmailBody(payload: any): string {
   if (payload.body?.data) {
     return Buffer.from(payload.body.data, 'base64').toString('utf-8');
   }
@@ -112,13 +151,13 @@ function extractEmailBody(payload) {
   return '';
 }
 
-function parseEmailMetadata(email) {
+function parseEmailMetadata(email: any): EmailMetadata {
   const headers = email.payload?.headers || [];
-  const getHeader = (name) => headers.find((h) => h.name === name)?.value || '';
+  const getHeader = (name: string) => headers.find((h: any) => h.name === name)?.value || '';
   
   // Parse attachments with attachment IDs
-  const attachments = [];
-  function extractAttachments(payload) {
+  const attachments: any[] = [];
+  function extractAttachments(payload: any) {
     if (payload.filename && payload.body?.size > 0) {
       attachments.push({
         filename: payload.filename,
@@ -430,7 +469,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       default:
         throw new Error(`Unknown tool: ${toolName}`);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error in ${toolName}:`, error);
     return {
       content: [
@@ -445,7 +484,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // IMPLEMENTATION OF NEW v3.0.0 TOOLS
 
-async function handleComposeEmail(args) {
+async function handleComposeEmail(args: any) {
   const params = ComposeEmailSchema.parse(args);
   const gmail = await getGmailService();
   
@@ -514,7 +553,7 @@ You can send this later from your drafts folder.`,
   }
 }
 
-async function handleReplyEmail(args) {
+async function handleReplyEmail(args: any) {
   const params = ReplyEmailSchema.parse(args);
   const gmail = await getGmailService();
   
@@ -526,7 +565,7 @@ async function handleReplyEmail(args) {
   });
   
   const headers = originalEmail.data.payload?.headers || [];
-  const getHeader = (name) => headers.find((h) => h.name === name)?.value || '';
+  const getHeader = (name: string) => headers.find((h: any) => h.name === name)?.value || '';
   
   const originalFrom = getHeader('From');
   const originalTo = getHeader('To');
@@ -608,7 +647,7 @@ You can send this reply later from your drafts.`,
   }
 }
 
-async function handleManageSubscriptions(args) {
+async function handleManageSubscriptions(args: any) {
   const params = ManageSubscriptionsSchema.parse(args);
   const gmail = await getGmailService();
   
@@ -641,18 +680,18 @@ Try searching a different category or check "all" categories.`,
     }
     
     // Group by sender to identify subscriptions (like your Gmail interface shows)
-    const senderMap = new Map();
+    const senderMap = new Map<string, Subscription>();
     
     for (const message of messages.slice(0, 50)) { // Limit for performance
       const email = await gmail.users.messages.get({
         userId: 'me',
-        id: message.id,
+        id: message.id!,
         format: 'metadata',
         metadataHeaders: ['From', 'Date', 'Subject']
       });
       
       const headers = email.data.payload?.headers || [];
-      const getHeader = (name) => headers.find((h) => h.name === name)?.value || '';
+      const getHeader = (name: string) => headers.find((h: any) => h.name === name)?.value || '';
       
       const from = getHeader('From');
       const date = getHeader('Date');
@@ -663,7 +702,7 @@ Try searching a different category or check "all" categories.`,
         const emailAddress = emailMatch ? emailMatch[1] || emailMatch[0] : from;
         
         if (senderMap.has(emailAddress)) {
-          const existing = senderMap.get(emailAddress);
+          const existing = senderMap.get(emailAddress)!;
           existing.totalEmails++;
           if (new Date(date) > new Date(existing.lastEmail)) {
             existing.lastEmail = date;
@@ -746,7 +785,7 @@ The sender might have been typed incorrectly or no recent emails exist.`,
     // Get the most recent email and look for unsubscribe links
     const email = await gmail.users.messages.get({
       userId: 'me',
-      id: messages[0].id,
+      id: messages[0].id!,
       format: 'full'
     });
     
@@ -760,7 +799,7 @@ The sender might have been typed incorrectly or no recent emails exist.`,
       /https?:\/\/[^\s]+manage[_-]?subscription[^\s]*/gi
     ];
     
-    let unsubscribeLinks = [];
+    let unsubscribeLinks: string[] = [];
     unsubscribePatterns.forEach(pattern => {
       const matches = body.match(pattern) || [];
       unsubscribeLinks = [...unsubscribeLinks, ...matches];
@@ -848,7 +887,7 @@ ${unsubscribeLinks.map((link, i) => `${i + 1}. ${link}`).join('\n')}
           },
         ],
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         content: [
           {
@@ -877,7 +916,7 @@ This might be due to insufficient permissions or API limitations.
   };
 }
 
-async function handleManageLabels(args) {
+async function handleManageLabels(args: any) {
   const params = ManageLabelsSchema.parse(args);
   const gmail = await getGmailService();
   
@@ -890,7 +929,7 @@ async function handleManageLabels(args) {
     const userLabels = labels.filter(label => label.type === 'user');
     const systemLabels = labels.filter(label => label.type === 'system');
     
-    const formatLabels = (labelList, title) => {
+    const formatLabels = (labelList: any[], title: string) => {
       if (labelList.length === 0) return '';
       return `**${title}:**\n${labelList.map(label => 
         `🏷️ **${label.name}** (ID: ${label.id})\n   📊 Messages: ${label.messagesTotal || 0} | Unread: ${label.messagesUnread || 0}`
@@ -951,7 +990,7 @@ ${formatLabels(userLabels, 'Your Custom Labels')}${formatLabels(systemLabels, 'S
           },
         ],
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         content: [
           {
@@ -988,7 +1027,7 @@ ${formatLabels(userLabels, 'Your Custom Labels')}${formatLabels(systemLabels, 'S
       
       await gmail.users.labels.delete({
         userId: 'me',
-        id: label.id
+        id: label.id!
       });
       
       return {
@@ -1005,7 +1044,7 @@ The label has been removed from your Gmail account.`,
           },
         ],
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         content: [
           {
@@ -1030,7 +1069,7 @@ Update functionality coming in future version.`,
   };
 }
 
-async function handleGetThread(args) {
+async function handleGetThread(args: any) {
   const params = GetThreadSchema.parse(args);
   const gmail = await getGmailService();
   
@@ -1082,7 +1121,7 @@ ${params.includeBody ? `\n📄 **Content**: ${email.body.substring(0, 300)}${ema
         },
       ],
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       content: [
         {
@@ -1103,7 +1142,7 @@ ${params.includeBody ? `\n📄 **Content**: ${email.body.substring(0, 300)}${ema
 
 // NEW v3.1.0: COMPLETE JSON-RPC ENDPOINT IMPLEMENTATIONS
 
-async function handleSummarizeThread(args) {
+async function handleSummarizeThread(args: any) {
   const params = SummarizeThreadSchema.parse(args);
   const gmail = await getGmailService();
   
@@ -1150,7 +1189,7 @@ async function handleSummarizeThread(args) {
         },
       ],
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       content: [
         {
@@ -1162,7 +1201,7 @@ async function handleSummarizeThread(args) {
   }
 }
 
-async function handleListActionItems(args) {
+async function handleListActionItems(args: any) {
   const params = ListActionItemsSchema.parse(args);
   const gmail = await getGmailService();
   
@@ -1206,12 +1245,12 @@ async function handleListActionItems(args) {
     }
     
     // Analyze first 20 emails for action items
-    const actionItems = [];
+    const actionItems: any[] = [];
     
     for (const message of messages.slice(0, 20)) {
       const email = await gmail.users.messages.get({
         userId: 'me',
-        id: message.id,
+        id: message.id!,
         format: 'full'
       });
       
@@ -1270,7 +1309,7 @@ async function handleListActionItems(args) {
     // Sort by priority and date
     const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
     filteredItems.sort((a, b) => {
-      const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+      const priorityDiff = (priorityOrder[b.priority as keyof typeof priorityOrder] || 0) - (priorityOrder[a.priority as keyof typeof priorityOrder] || 0);
       if (priorityDiff !== 0) return priorityDiff;
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
@@ -1287,7 +1326,7 @@ async function handleListActionItems(args) {
         },
       ],
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       content: [
         {
@@ -1299,7 +1338,7 @@ async function handleListActionItems(args) {
   }
 }
 
-async function handleGenerateDraft(args) {
+async function handleGenerateDraft(args: any) {
   const params = GenerateDraftSchema.parse(args);
   const gmail = await getGmailService();
   
@@ -1355,7 +1394,7 @@ async function handleGenerateDraft(args) {
       });
       
       const headers = originalEmail.data.payload?.headers || [];
-      const originalSubject = headers.find((h) => h.name === 'Subject')?.value || '';
+      const originalSubject = headers.find((h: any) => h.name === 'Subject')?.value || '';
       subject = `Re: ${originalSubject.replace(/^Re:\s*/i, '')}`;
     }
     
@@ -1367,7 +1406,7 @@ async function handleGenerateDraft(args) {
         },
       ],
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       content: [
         {
@@ -1379,7 +1418,7 @@ async function handleGenerateDraft(args) {
   }
 }
 
-async function handleSendNudge(args) {
+async function handleSendNudge(args: any) {
   const params = SendNudgeSchema.parse(args);
   const gmail = await getGmailService();
   
@@ -1435,7 +1474,7 @@ async function handleSendNudge(args) {
         },
       ],
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       content: [
         {
@@ -1447,7 +1486,7 @@ async function handleSendNudge(args) {
   }
 }
 
-async function handleExtractAttachmentsSummary(args) {
+async function handleExtractAttachmentsSummary(args: any) {
   const params = ExtractAttachmentsSummarySchema.parse(args);
   const gmail = await getGmailService();
   
@@ -1569,7 +1608,7 @@ async function handleExtractAttachmentsSummary(args) {
         },
       ],
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       content: [
         {
@@ -1583,7 +1622,7 @@ async function handleExtractAttachmentsSummary(args) {
 
 // ENHANCED EXISTING TOOL IMPLEMENTATIONS (Full v3.0.0)
 
-async function handleGetEmails(args) {
+async function handleGetEmails(args: any) {
   const params = GetEmailsSchema.parse(args);
   const gmail = await getGmailService();
   
@@ -1620,12 +1659,12 @@ async function handleGetEmails(args) {
   }
   
   // Fetch detailed email information
-  const emails = [];
+  const emails: EmailMetadata[] = [];
   
   for (const message of messages) {
     const email = await gmail.users.messages.get({
       userId: 'me',
-      id: message.id,
+      id: message.id!,
       format: params.includeBody ? 'full' : 'metadata',
       metadataHeaders: ['From', 'To', 'Subject', 'Date', 'Cc', 'Bcc']
     });
@@ -1662,7 +1701,7 @@ async function handleGetEmails(args) {
   };
 }
 
-async function handleAnalyzeEmails(args) {
+async function handleAnalyzeEmails(args: any) {
   const params = AnalyzeEmailsSchema.parse(args);
   const gmail = await getGmailService();
   
@@ -1694,11 +1733,11 @@ async function handleAnalyzeEmails(args) {
   }
   
   // Fetch email details for analysis
-  const emails = [];
+  const emails: EmailMetadata[] = [];
   for (const message of messages.slice(0, 10)) { // Limit for performance
     const email = await gmail.users.messages.get({
       userId: 'me',
-      id: message.id,
+      id: message.id!,
       format: 'full'
     });
     emails.push(parseEmailMetadata(email.data));
@@ -1744,9 +1783,9 @@ async function handleAnalyzeEmails(args) {
         },
       ],
     };
-  } catch (aiError) {
+  } catch (aiError: any) {
     // Fallback to basic analysis
-    const basicAnalysis = `**Basic Analysis (AI unavailable):**\n- Unread emails: ${emails.filter(e => !e.isRead).length}\n- Important emails: ${emails.filter(e => e.isImportant).length}\n- Emails with attachments: ${emails.filter(e => e.attachments.length > 0).length}\n- Most active sender: ${emails.reduce((acc, email) => { acc[email.from] = (acc[email.from] || 0) + 1; return acc; }, {})}`;
+    const basicAnalysis = `**Basic Analysis (AI unavailable):**\n- Unread emails: ${emails.filter(e => !e.isRead).length}\n- Important emails: ${emails.filter(e => e.isImportant).length}\n- Emails with attachments: ${emails.filter(e => e.attachments.length > 0).length}\n- Most active sender: ${emails.reduce((acc, email) => { acc[email.from] = (acc[email.from] || 0) + 1; return acc; }, {} as any)}`;
     
     return {
       content: [
@@ -1759,7 +1798,7 @@ async function handleAnalyzeEmails(args) {
   }
 }
 
-async function handleSearchEmails(args) {
+async function handleSearchEmails(args: any) {
   const gmail = await getGmailService();
   const maxResults = Math.min(args.maxResults || 20, 100);
   
@@ -1783,11 +1822,11 @@ async function handleSearchEmails(args) {
   }
   
   // Get details for first few results
-  const emails = [];
+  const emails: EmailMetadata[] = [];
   for (const message of messages.slice(0, 10)) {
     const email = await gmail.users.messages.get({
       userId: 'me',
-      id: message.id,
+      id: message.id!,
       format: 'metadata',
       metadataHeaders: ['From', 'To', 'Subject', 'Date']
     });
@@ -1808,7 +1847,7 @@ async function handleSearchEmails(args) {
   };
 }
 
-async function handleGetEmailDetails(args) {
+async function handleGetEmailDetails(args: any) {
   const gmail = await getGmailService();
   
   const email = await gmail.users.messages.get({
@@ -1819,7 +1858,7 @@ async function handleGetEmailDetails(args) {
   
   const emailData = parseEmailMetadata(email.data);
   
-  const details = `🔬 **Email Details**\n\n**📧 Message Information:**\n- **Subject**: ${emailData.subject}\n- **From**: ${emailData.from}\n- **To**: ${emailData.to}\n${emailData.cc ? `- **CC**: ${emailData.cc}\n` : ''}${emailData.bcc ? `- **BCC**: ${emailData.bcc}\n` : ''}- **Date**: ${emailData.date}\n- **Message ID**: ${emailData.messageId}\n- **Thread ID**: ${emailData.threadId}\n\n**📊 Status:**\n- **Read**: ${emailData.isRead ? '✅ Yes' : '❌ No'}\n- **Starred**: ${emailData.isStarred ? '⭐ Yes' : '❌ No'}\n- **Important**: ${emailData.isImportant ? '🔥 Yes' : '❌ No'}\n\n**🏷️ Labels**: ${emailData.labels.join(', ') || 'None'}\n\n**📎 Attachments**: ${emailData.attachments.length > 0 ? emailData.attachments.map(att => `${att.filename} (${(att.size/1024).toFixed(1)}KB)`).join(', ') : 'None'}\n\n**📄 Content:**\n${emailData.body || 'No content available'}\n\n**🔧 Available Actions:**\n- **Reply**: \`reply_email\` with emailId "${args.emailId}"\n- **Manage**: \`manage_email\` with various actions\n- **View thread**: \`get_thread\` with threadId "${emailData.threadId}"`;
+  const details = `🔬 **Email Details**\n\n**📧 Message Information:**\n- **Subject**: ${emailData.subject}\n- **From**: ${emailData.from}\n- **To**: ${emailData.to}\n${emailData.cc ? `- **CC**: ${emailData.cc}\n` : ''}${emailData.bcc ? `- **BCC**: ${emailData.bcc}\n` : ''}**- **Date**: ${emailData.date}\n- **Message ID**: ${emailData.messageId}\n- **Thread ID**: ${emailData.threadId}\n\n**📊 Status:**\n- **Read**: ${emailData.isRead ? '✅ Yes' : '❌ No'}\n- **Starred**: ${emailData.isStarred ? '⭐ Yes' : '❌ No'}\n- **Important**: ${emailData.isImportant ? '🔥 Yes' : '❌ No'}\n\n**🏷️ Labels**: ${emailData.labels.join(', ') || 'None'}\n\n**📎 Attachments**: ${emailData.attachments.length > 0 ? emailData.attachments.map(att => `${att.filename} (${(att.size/1024).toFixed(1)}KB)`).join(', ') : 'None'}\n\n**📄 Content:**\n${emailData.body || 'No content available'}\n\n**🔧 Available Actions:**\n- **Reply**: \`reply_email\` with emailId "${args.emailId}"\n- **Manage**: \`manage_email\` with various actions\n- **View thread**: \`get_thread\` with threadId "${emailData.threadId}"`;
   
   return {
     content: [
@@ -1831,7 +1870,7 @@ async function handleGetEmailDetails(args) {
   };
 }
 
-async function handleManageEmail(args) {
+async function handleManageEmail(args: any) {
   const gmail = await getGmailService();
   
   try {
@@ -1866,7 +1905,7 @@ async function handleManageEmail(args) {
         await gmail.users.messages.modify({
           userId: 'me',
           id: args.emailId,
-          requestBody: { addLabelIds: [label.id] }
+          requestBody: { addLabelIds: [label.id!] }
         });
         result = `🏷️ Label "${args.labelName}" added to email`;
         break;
@@ -1880,7 +1919,7 @@ async function handleManageEmail(args) {
         await gmail.users.messages.modify({
           userId: 'me',
           id: args.emailId,
-          requestBody: { removeLabelIds: [labelToRemove.id] }
+          requestBody: { removeLabelIds: [labelToRemove.id!] }
         });
         result = `🏷️ Label "${args.labelName}" removed from email`;
         break;
@@ -1932,7 +1971,7 @@ async function handleManageEmail(args) {
         },
       ],
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       content: [
         {
@@ -1944,7 +1983,7 @@ async function handleManageEmail(args) {
   }
 }
 
-async function handleGetGmailStats(args) {
+async function handleGetGmailStats(args: any) {
   const gmail = await getGmailService();
   
   try {
@@ -1982,7 +2021,7 @@ async function handleGetGmailStats(args) {
         },
       ],
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       content: [
         {
@@ -1994,7 +2033,7 @@ async function handleGetGmailStats(args) {
   }
 }
 
-async function handleGetSpecialEmails(args) {
+async function handleGetSpecialEmails(args: any) {
   const gmail = await getGmailService();
   
   let query = '';
@@ -2053,11 +2092,11 @@ async function handleGetSpecialEmails(args) {
   }
   
   // Get email details
-  const emails = [];
+  const emails: EmailMetadata[] = [];
   for (const message of messages) {
     const email = await gmail.users.messages.get({
       userId: 'me',
-      id: message.id,
+      id: message.id!,
       format: 'metadata',
       metadataHeaders: ['From', 'To', 'Subject', 'Date']
     });

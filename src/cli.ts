@@ -238,7 +238,7 @@ class GmailMCPCLI {
     }
     return {
       projectName: 'gmail-mcp-server',
-      version: '3.0.0',
+      version: '3.2.0',
       deploymentTarget: 'local'
     };
   }
@@ -249,9 +249,9 @@ class GmailMCPCLI {
 
   private showBanner(): void {
     console.log(boxen(
-      chalk.blue.bold('📧 Gmail MCP Server CLI v3.1.0\n') +
-      chalk.gray('One-command Gmail MCP Server (GitHub MCP Style)\n') +
-      chalk.yellow('⚡ One-Command Setup | 🤖 AI-Powered | 🚀 Just like GitHub MCP'),
+      chalk.blue.bold('📧 Gmail MCP Server CLI v3.2.0\n') +
+      chalk.gray('Deploy Gmail MCP Server with 17 AI-powered tools\n') +
+      chalk.yellow('⚡ One-Command Setup | 🤖 17 Gmail Tools | 🚀 Production Ready'),
       {
         padding: 1,
         margin: 1,
@@ -264,7 +264,7 @@ class GmailMCPCLI {
   async init(): Promise<void> {
     this.showBanner();
     
-    console.log(chalk.cyan('🚀 Initializing Gmail MCP Server (GitHub MCP Style)...\n'));
+    console.log(chalk.cyan('🚀 Initializing Gmail MCP Server with 17 AI-powered tools...\n'));
 
     const answers = await inquirer.prompt([
       {
@@ -286,8 +286,19 @@ class GmailMCPCLI {
       {
         type: 'password',
         name: 'openaiApiKey',
-        message: 'OpenAI API Key (optional - for AI features):',
-        when: () => !this.config.openaiApiKey
+        message: 'OpenAI API Key (REQUIRED for all 17 Gmail tools):',
+        validate: (input) => {
+          if (!input || input.trim() === '') {
+            return '🚨 OpenAI API Key is REQUIRED for all 17 Gmail tools to work! Get one at https://platform.openai.com/api-keys';
+          }
+          if (!input.startsWith('sk-')) {
+            return '⚠️  OpenAI API Key should start with "sk-"';
+          }
+          if (input.length < 50) {
+            return '⚠️  OpenAI API Key seems too short. Please check your key.';
+          }
+          return true;
+        }
       }
     ]);
 
@@ -302,10 +313,16 @@ class GmailMCPCLI {
     this.saveConfig();
 
     console.log(boxen(
-      chalk.green.bold('✅ Gmail MCP Server Ready!\n') +
-      chalk.white('Next steps:\n') +
-      chalk.gray('1. gmail-mcp deploy    - Deploy to your chosen target\n') +
-      chalk.gray('2. Test: "List my email subscriptions" in Claude Desktop'),
+      chalk.green.bold('✅ Gmail MCP Server Ready with 17 Tools!\n') +
+      chalk.white('Available Tools:\n') +
+      chalk.gray('📧 Email Management: get_emails, search_emails, get_email_details\n') +
+      chalk.gray('🤖 AI Analysis: analyze_emails, get_gmail_stats\n') +
+      chalk.gray('✍️  Composition: compose_email, reply_email\n') +
+      chalk.gray('🏷️  Organization: manage_labels, get_thread\n') +
+      chalk.gray('📂 Special: get_special_emails, manage_email\n') +
+      chalk.gray('🚫 Subscriptions: manage_subscriptions (unsubscribe!)\n') +
+      chalk.gray('📈 Analytics: Advanced email insights & automation\n\n') +
+      chalk.cyan('Next: gmail-mcp deploy'),
       {
         padding: 1,
         margin: 1,
@@ -313,6 +330,8 @@ class GmailMCPCLI {
         borderColor: 'green'
       }
     ));
+
+    process.exit(0);
   }
 
   private async setupProjectWithSharedOAuth(): Promise<void> {
@@ -943,7 +962,10 @@ GMAIL_CLIENT_SECRET=your-gmail-client-secret
       }
 
       const serverPath = fs.existsSync('server') ? 'server' : 'templates/server-template';
-      const serverDistPath = path.resolve(serverPath, 'dist', 'index.js');
+      // Check if using JavaScript or TypeScript and get ABSOLUTE path
+const srcIndexPath = path.resolve(process.cwd(), serverPath, 'src', 'index.js');
+const distIndexPath = path.resolve(process.cwd(), serverPath, 'dist', 'index.js');
+const serverDistPath = fs.existsSync(distIndexPath) ? distIndexPath : srcIndexPath;
       
       claudeConfig.mcpServers[this.config.projectName] = {
         command: "node",
@@ -1036,7 +1058,7 @@ const cli = new GmailMCPCLI();
 program
   .name('gmail-mcp')
   .description('Gmail MCP Server CLI - One-command setup (GitHub MCP Style)')
-  .version('3.1.0');
+  .version('3.1.9');
 
 program
   .command('init')
