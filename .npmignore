@@ -1,0 +1,49 @@
+# Sensitive files - NEVER publish these
+.gmail-mcp.json
+token.json
+credentials.json
+.env
+.env.*
+
+# Development files
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Test files
+*.test.js
+*.spec.js
+coverage/
+test/
+
+# Config files
+.gitignore
+tsconfig.json
+.eslintrc*
+.prettierrc*
+
+# Source files (we only ship dist)
+src/
+*.ts
+
+# Debug and temporary files
+debug-*.ps1
+debug-*.sh
+repomix-output.xml
+testinggmailmcp.txt
+
+# Local server copy
+/server/
+
+# Git
+.git/
+.github/
+
+# IDE
+.vscode/
+.idea/
+
+# Build artifacts
+*.tgz
