@@ -33,9 +33,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/akhilpal0/gmail-mcp-cli.git"
+    "url": "https://github.com/oyeakhill/gmail-mcp-cli.git"
   },
-  "homepage": "https://github.com/akhilpal0/gmail-mcp-cli",
+  "homepage": "https://github.com/oyeakhill/gmail-mcp-cli",
   "dependencies": {
     "boxen": "^8.0.1",
     "chalk": "^5.4.1",
