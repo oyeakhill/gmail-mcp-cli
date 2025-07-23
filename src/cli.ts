@@ -249,7 +249,7 @@ class GmailMCPCLI {
 
   private showBanner(): void {
     console.log(boxen(
-      chalk.blue.bold('📧 Gmail MCP Server CLI v3.2.7\n') +
+      chalk.blue.bold('📧 Gmail MCP Server CLI v3.2.8\n') +
       chalk.gray('Deploy Gmail MCP Server with 17 AI-powered Gmail tools\n') +
       chalk.yellow('⚡ One-Command Setup | 🤖 AI-Powered | 🚀 Production Ready'),
       {
@@ -1283,7 +1283,7 @@ const cli = new GmailMCPCLI();
 program
   .name('gmail-mcp')
   .description('Gmail MCP Server CLI - One-command setup (GitHub MCP Style)')
-  .version('3.2.7');
+  .version('3.2.8');
 
 program
   .command('init')
